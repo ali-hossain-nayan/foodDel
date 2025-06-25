@@ -16,7 +16,7 @@ function App() {
   const [token, setToken] = useState(localStorage.getItem("token") || null);
   return (
     <>
-      {showLogin ? <Login setShowLogin={setShowLogin}/> : <></>}
+      {showLogin ? <Login setShowLogin={setShowLogin} /> : <></>}
       <div>
         <Navbar setShowLogin={setShowLogin} />
         <Routes>

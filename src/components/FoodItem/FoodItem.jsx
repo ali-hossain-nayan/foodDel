@@ -1,56 +1,47 @@
-import React from 'react';
-import { useDispatch, useSelector } from 'react-redux';
-import { addToCart, removeFromCart, selectCartItems } from '../../store/cartSlic/foodListSlice';
+import React, { useContext } from 'react';
 import { assets } from '../../assets/assets';
+import { StoreContext } from '../../context/StoreContext';
 
 const FoodItem = ({ id, name, price, description, image }) => {
-    const dispatch = useDispatch();
-    const cartItems = useSelector(selectCartItems);
-    const url = "http://localhost:4001"
+    const { cartItems, addToCart, removeCart, baseURL } = useContext(StoreContext);
 
-    const handleAddToCart = () => {
-        dispatch(addToCart({ itemId: id }));
-    };
+    const itemCount = cartItems[id] || 0;
+    // console.log("Image URL:", `${baseURL}/images/${image}`);
 
-    const handleRemoveFromCart = () => {
-        if (cartItems[id] > 0) {
-            dispatch(removeFromCart({ itemId: id }));
-        }
-    };
 
     return (
-        <div className="mt-10 flex flex-col items-center bg-white shadow-md rounded-lg p-4 w-60 sm:w-80 hover:shadow-lg transition-shadow duration-300">
-            <div className="mb-4">
-                <img className="rounded-lg w-full h-48 object-cover" src={url + "/images/" + image} alt={name} />
-                {!cartItems[id] ? (
-                    <img
-                        className="mt-2 cursor-pointer transition"
-                        src={assets.add_icon_white}
-                        onClick={handleAddToCart}
-                        alt="Add to cart"
-                    />
+        <div className="w-60 sm:w-80 p-4 bg-white rounded-2xl shadow-md hover:shadow-lg transition-shadow duration-300 flex flex-col items-center mt-10">
+            <div className="w-full h-48 mb-4">
+                <img
+                    className="w-full h-full object-cover rounded-lg"
+                   src={`${baseURL}/images/${image}`}
+
+                    alt={name}
+                />
+            </div>
+
+            <div className="flex items-center justify-center gap-3 mb-4">
+                {itemCount === 0 ? (
+                    <button onClick={() => addToCart(id)}>
+                        <img src={assets.add_icon_white} alt="Add" className="w-8 h-8" />
+                    </button>
                 ) : (
-                    <div>
-                        <img
-                            className="mt-2 cursor-pointer"
-                            src={assets.add_icon_green}
-                            onClick={handleAddToCart}
-                            alt="Add more"
-                        />
-                        <p>{cartItems[id]}</p>
-                        <img
-                            className="mt-2 cursor-pointer"
-                            src={assets.remove_icon_red}
-                            onClick={handleRemoveFromCart}
-                            alt="Remove from cart"
-                        />
+                    <div className="flex items-center gap-2">
+                        <button onClick={() => removeCart(id)}>
+                            <img src={assets.remove_icon_red} alt="Remove" className="w-6 h-6" />
+                        </button>
+                        <span className="text-md font-medium">{itemCount}</span>
+                        <button onClick={() => addToCart(id)}>
+                            <img src={assets.add_icon_green} alt="Add" className="w-6 h-6" />
+                        </button>
                     </div>
                 )}
             </div>
+
             <div className="text-center">
-                <h3 className="text-xl font-bold text-gray-800">{name}</h3>
-                <p className="text-sm text-gray-600 mt-2">{description}</p>
-                <p className="text-lg font-semibold text-green-600 mt-4">${price.toFixed(2)}</p>
+                <h3 className="text-lg font-bold text-gray-800">{name}</h3>
+                <p className="text-sm text-gray-500 mt-1">{description}</p>
+                <p className="text-lg font-semibold text-green-600 mt-3">${price.toFixed(2)}</p>
             </div>
         </div>
     );

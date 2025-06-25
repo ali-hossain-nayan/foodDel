@@ -1,113 +1,112 @@
-import React from 'react'
-import { useSelector } from 'react-redux'
-import { getTotalCartAmount } from '../../store/cartSlic/foodListSlice'
-import { Link } from 'react-router-dom';
+import React, { useContext, useEffect, useState } from 'react';
+import { StoreContext } from '../../context/StoreContext';
+import axios from 'axios';
+import { useNavigate } from 'react-router-dom';
 
 const PlaceOrder = () => {
-  const totalAmount = useSelector(getTotalCartAmount);
+  const { getTotalCartAmount, token, food_list, cartItems, baseURL } = useContext(StoreContext);
+  const navigate = useNavigate();
+
+  const [data, setData] = useState({
+    firstName: '',
+    lastName: '',
+    email: '',
+    street: '',
+    city: '',
+    state: '',
+    zipcode: '',
+    country: '',
+    phone: ''
+  });
+
+  const onChangeHandler = (e) => {
+    const { name, value } = e.target;
+    setData((prevData) => ({ ...prevData, [name]: value }));
+  };
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+
+    let orderItems = food_list.reduce((acc, item) => {
+      if (cartItems[item._id] > 0) {
+        acc.push({ ...item, quantity: cartItems[item._id] });
+      }
+      return acc;
+    }, []);
+
+    let orderData = {
+      address: data,
+      items: orderItems,
+      amount: getTotalCartAmount() + 2
+    };
+
+    const callAPI = await axios.post(baseURL + '/api/order/place', orderData, { headers: { token } });
+
+    if (callAPI.data.success) {
+      window.location.replace(callAPI.data.session_url);
+    } else {
+      alert('Something went wrong!!');
+    }
+  };
+
+  useEffect(() => {
+    if (!token || getTotalCartAmount() === 0) {
+      navigate('/cart');
+    }
+  }, [token]);
+
+  const deliveryFee = getTotalCartAmount() === 0 ? 0 : 2;
+  const total = getTotalCartAmount() + deliveryFee;
 
   return (
-    <div className='flex justify-between mt-32   '>
+    <form onSubmit={handleSubmit} className="flex flex-col lg:flex-row justify-between mt-20 px-4 md:px-16 gap-8">
+      <div className="w-full lg:w-1/2 bg-gray-50 rounded-xl shadow-md p-6">
+        <h2 className="text-xl font-bold text-[#137548] mb-6">Delivery Information</h2>
 
-      <div className="rounded-xl w-full md:w-1/2 p-6 bg-gray-50 shadow-lg">
-        <h1 className="font-bold text-[#137548] text-xl mb-6">Delivery Information</h1>
-        <form className="space-y-4 w-full">
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <input
-              className="border-2  p-3 rounded-lg focus:outline-none focus:border-[#9ecdb7]  focus:ring-[#137548]"
-              type="text"
-              placeholder="First name"
-              required
-            />
-            <input
-              className="border-2 p-3 rounded-lg focus:outline-none focus:border-[#9ecdb7]  focus:ring-[#137548]"
-              type="text"
-              placeholder="Last name"
-              required
-            />
-          </div>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+          <input type="text" name="firstName" value={data.firstName} onChange={onChangeHandler} placeholder="First name" required className="border-2 p-3 rounded-lg w-full" />
+          <input type="text" name="lastName" value={data.lastName} onChange={onChangeHandler} placeholder="Last name" required className="border-2 p-3 rounded-lg w-full" />
+        </div>
 
-          <input
-            className="border-2 w-full p-3 rounded-lg focus:outline-none focus:border-[#9ecdb7]  focus:ring-[#137548]"
-            type="email"
-            placeholder="Email address"
-            required
-          />
+        <input type="email" name="email" value={data.email} onChange={onChangeHandler} placeholder="Email address" required className="border-2 p-3 rounded-lg w-full mb-4" />
 
-          <input
-            className="border-2 w-full p-3 rounded-lg focus:outline-none focus:border-[#9ecdb7]  focus:ring-[#137548]"
-            type="text"
-            placeholder="Street"
-            required
-          />
+        <input type="text" name="street" value={data.street} onChange={onChangeHandler} placeholder="Street" required className="border-2 p-3 rounded-lg w-full mb-4" />
 
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <input
-              className="border-2 p-3 rounded-lg focus:outline-none focus:border-[#9ecdb7]  focus:ring-[#137548]"
-              type="text"
-              placeholder="City"
-              required
-            />
-            <input
-              className="border-2 p-3 rounded-lg focus:outline-none focus:border-[#9ecdb7]  focus:ring-[#137548]"
-              type="text"
-              placeholder="State"
-              required
-            />
-          </div>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+          <input type="text" name="city" value={data.city} onChange={onChangeHandler} placeholder="City" required className="border-2 p-3 rounded-lg w-full" />
+          <input type="text" name="state" value={data.state} onChange={onChangeHandler} placeholder="State" required className="border-2 p-3 rounded-lg w-full" />
+        </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <input
-              className="border-2 p-3 rounded-lg focus:outline-none focus:border-[#9ecdb7]  focus:ring-[#137548]"
-              type="text"
-              placeholder="Zip code"
-              required
-            />
-            <input
-              className="border-2 p-3 rounded-lg focus:outline-none focus:border-[#9ecdb7]  focus:ring-[#137548]"
-              type="text"
-              placeholder="Country"
-              required
-            />
-          </div>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+          <input type="text" name="zipcode" value={data.zipcode} onChange={onChangeHandler} placeholder="Zip code" required className="border-2 p-3 rounded-lg w-full" />
+          <input type="text" name="country" value={data.country} onChange={onChangeHandler} placeholder="Country" required className="border-2 p-3 rounded-lg w-full" />
+        </div>
 
-          <input
-            className="border-2 w-full p-3 rounded-lg focus:outline-none focus:border-[#9ecdb7]  focus:ring-[#137548]"
-            type="text"
-            placeholder="Phone"
-            required
-          />
-        </form>
+        <input type="text" name="phone" value={data.phone} onChange={onChangeHandler} placeholder="Phone" required className="border-2 p-3 rounded-lg w-full" />
       </div>
 
-
-
-      <div className="p-4 ml-8 bg-gray-50 rounded-md shadow-md flex-1 mr-">
-        <h1 className="text-[#137548] font-bold text-xl">Cart Totals</h1>
-        <div className="mt-4">
-          <div className="flex justify-between py-2">
-            <p className="text-gray-700">Subtotal</p>
-            <p className="text-gray-700 font-medium">${totalAmount}</p>
+      <div className="w-full lg:w-1/2 p-6 bg-gray-50 rounded-xl shadow-md">
+        <h2 className="text-xl font-bold text-[#137548] mb-4">Cart Totals</h2>
+        <div className="space-y-4">
+          <div className="flex justify-between">
+            <span>Subtotal</span>
+            <span>${getTotalCartAmount().toFixed(2)}</span>
           </div>
-          <hr />
-          <div className="flex justify-between py-2">
-            <p className="text-gray-700">Delivery Fee</p>
-            <p className="text-gray-700 font-medium">${2}</p>
+          <div className="flex justify-between">
+            <span>Delivery Fee</span>
+            <span>${deliveryFee}</span>
           </div>
-          <hr />
-          <div className="flex justify-between py-2 font-bold">
-            <p className="text-gray-700">Total</p>
-            <p className="text-gray-700">${totalAmount + 2}</p>
+          <div className="flex justify-between font-bold">
+            <span>Total</span>
+            <span>${total.toFixed(2)}</span>
           </div>
         </div>
-        {/* <Link to="/order"> */}
-        <button className="w-full bg-[#137548] mt-4 text-white py-3 rounded-md hover:bg-[#79b89a]">
+        <button type="submit" className="w-full bg-[#137548] text-white mt-6 py-3 rounded-lg hover:bg-[#0e5e3f] transition">
           PROCEED TO PAYMENT
         </button>
-        {/* </Link> */}
       </div>
-    </div>
-  )
-}
+    </form>
+  );
+};
 
-export default PlaceOrder
+export default PlaceOrder;

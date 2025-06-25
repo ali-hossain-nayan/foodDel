@@ -1,39 +1,42 @@
-import express from "express"
-import cors from "cors"
-import connectDB from "./config/db.js";
-import foodRouter from "./routes/foodRoute.js";
-import userRouter from "./routes/userRoute.js";
-import "dotenv/config"
-import cartRouter from "./routes/cartRouter.js";
-//db->model->controller->route->server-endpoints
-//app config
+import express from 'express'
+import cors from 'cors'
+import { connectDB } from './config/db.js'
+import foodRouter from './routes/foodRoute.js'
+import userRouter from './routes/userRoute.js'
+import 'dotenv/config'
+import cartRouter from './routes/cartRoute.js'
+import orderRouter from './routes/orderRoute.js'
+// db->model->controller->routess
+// app config
+const app = express()
+const port = process.env.PORT || 4001
 
-const app = express();
-const port = 4001;
 
-//middleware
-app.use(express.json());//whenever request from frontend to backend it will pass using this json
-app.use(cors());//we can access backend with any frontend
+// middleware
+app.use(express.json())//connectivity with json form mate fornt-backend
+app.use(cors())//access frontend from any server
 
-//db connection
+// DB Connection
 connectDB();
 
 
-//api endpoints
-app.use("/api/food", foodRouter);
-app.use("/api/user", userRouter);
-app.use("/api/cart", cartRouter);
-app.use("/images", express.static("uploads"));
+
+// api endpoints
+app.use('/api/food', foodRouter)
+app.use('/images', express.static('uploads'))
+app.use('/api/user', userRouter);
+app.use('/api/cart', cartRouter);
+app.use('/api/order', orderRouter);
 
 
 
-app.get("/", (req, res) => {
-    res.send("API is Working..");
+
+
+app.get('/', (req, res) => {
+    res.send('API is Working...')
 })
 
-
-//running the server
 app.listen(port, () => {
-    console.log(`Server Started On http://localhost:${port}`);
+    console.log(`Server started on http://localhost:${port}`)
 })
-
+// mongodb+srv://aliNayan:01690205129@cluster0.rzcnd.mongodb.net/?

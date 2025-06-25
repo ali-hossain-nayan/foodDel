@@ -1,31 +1,24 @@
-import React, { useState, useEffect } from 'react';
-import { assets, food_list } from '../../assets/assets';
+import React, { useState, useEffect, useContext } from 'react';
+import { assets } from '../../assets/assets';
 import { Link, useNavigate } from 'react-router-dom';
-import { useSelector } from 'react-redux';
-import { getTotalCartAmount } from '../../store/cartSlic/foodListSlice';
+import { StoreContext } from '../../context/StoreContext';
 
 const Navbar = ({ setShowLogin }) => {
     const [menu, setMenu] = useState("Home");
     const [showSearch, setShowSearch] = useState(false);
     const [searchTerm, setSearchTerm] = useState("");
     const [searchResults, setSearchResults] = useState([]);
-    const [token, setToken] = useState(null);
     const [showProfileDropdown, setShowProfileDropdown] = useState(false);
-    const totalAmount = useSelector(getTotalCartAmount);
 
-    const menuItems = [
-        { name: "Home", id: "/" },
-        { name: "Menu", id: "explore-menu" },
-        { name: "Contact", id: "footer" },
-    ];
+    const { getTotalCartAmount, token, setToken, food_list } = useContext(StoreContext);
+    const navigate = useNavigate();
 
-    // Retrieve the token from localStorage when the component mounts
     useEffect(() => {
         const savedToken = localStorage.getItem("token");
         if (savedToken) {
             setToken(savedToken);
         }
-    }, []);
+    }, [setToken]);
 
     const handleSearch = (term) => {
         setSearchTerm(term);
@@ -39,14 +32,24 @@ const Navbar = ({ setShowLogin }) => {
         }
     };
 
-    const navigate = useNavigate();
-
     const handleLogout = () => {
-        localStorage.removeItem("token"); // Remove token from localStorage
-        setToken(null); // Reset the token state
-        // alert("You have been logged out.");
+        localStorage.removeItem("token");
+        setToken('');
         navigate("/");
     };
+
+    const handleOrdersClick = () => {
+        navigate('/myorders');
+        setShowProfileDropdown(false);
+    };
+
+    const totalAmount = getTotalCartAmount();
+
+    const menuItems = [
+        { name: "Home", id: "/" },
+        { name: "Menu", id: "explore-menu" },
+        { name: "Contact", id: "footer" },
+    ];
 
     return (
         <div className="flex p-4 justify-center shadow-lg bg-white">
@@ -60,7 +63,9 @@ const Navbar = ({ setShowLogin }) => {
                             }`}
                         onClick={() => {
                             setMenu(item.name);
-                            if (item.id) {
+                            if (item.id.startsWith('/')) {
+                                navigate(item.id);
+                            } else {
                                 document.getElementById(item.id)?.scrollIntoView({ behavior: "smooth" });
                             }
                         }}
@@ -79,9 +84,9 @@ const Navbar = ({ setShowLogin }) => {
                     onClick={() => setShowSearch(!showSearch)}
                 />
 
-                {/* Search Input */}
+                {/* Search Input & Results */}
                 {showSearch && (
-                    <div className="absolute top-10 left-0 w-48 bg-white shadow-lg p-2 rounded-lg">
+                    <div className="absolute top-10 left-0 w-48 bg-white shadow-lg p-2 rounded-lg z-20">
                         <input
                             type="text"
                             className="w-full border border-gray-300 p-2 rounded-lg focus:outline-none"
@@ -89,8 +94,8 @@ const Navbar = ({ setShowLogin }) => {
                             value={searchTerm}
                             onChange={(e) => handleSearch(e.target.value)}
                         />
-                        {searchResults.length > 0 && (
-                            <ul className="mt-2">
+                        {searchResults.length > 0 ? (
+                            <ul className="mt-2 max-h-48 overflow-y-auto">
                                 {searchResults.map((result) => (
                                     <li
                                         key={result._id}
@@ -101,15 +106,18 @@ const Navbar = ({ setShowLogin }) => {
                                             setSearchTerm("");
                                         }}
                                     >
-                                        <img src={result.image} alt={result.name} className="w-6 h-6 rounded-full" />
+                                        <img
+                                            src={`${baseURL}/images/${result.image}`}
+                                            alt={result.name}
+                                            className="w-6 h-6 rounded-full"
+                                        />
                                         {result.name}
                                     </li>
                                 ))}
                             </ul>
-                        )}
-                        {searchResults.length === 0 && searchTerm.trim() !== "" && (
+                        ) : searchTerm.trim() !== "" ? (
                             <p className="text-gray-500 text-sm mt-2">No results found</p>
-                        )}
+                        ) : null}
                     </div>
                 )}
 
@@ -118,15 +126,11 @@ const Navbar = ({ setShowLogin }) => {
                     <Link to="/cart">
                         <img src={assets.basket_icon} alt="basket" />
                     </Link>
-                    <div
-                        className={
-                            totalAmount === 0
-                                ? ""
-                                : "absolute top-[-5px] right-[-6px] bg-red-500 text-white text-xs font-bold w-5 h-5 flex items-center justify-center rounded-full"
-                        }
-                    >
-                        {totalAmount}
-                    </div>
+                    {totalAmount > 0 && (
+                        <div className="absolute top-[-5px] right-[-6px] bg-red-500 text-white text-xs font-bold w-5 h-5 flex items-center justify-center rounded-full">
+                            {totalAmount}
+                        </div>
+                    )}
                 </div>
 
                 {/* Profile or Sign In */}
@@ -139,10 +143,10 @@ const Navbar = ({ setShowLogin }) => {
                             onClick={() => setShowProfileDropdown(!showProfileDropdown)}
                         />
                         {showProfileDropdown && (
-                            <ul className="absolute top-10 right-0 bg-white shadow-lg rounded-lg w-32">
+                            <ul className="absolute top-10 right-0 bg-white shadow-lg rounded-lg w-32 z-30">
                                 <li
                                     className="flex items-center gap-2 p-2 hover:bg-gray-200 cursor-pointer"
-                                    onClick={() => alert("Orders clicked")}
+                                    onClick={handleOrdersClick}
                                 >
                                     <img src={assets.bag_icon} alt="Orders" className="w-4 h-4" />
                                     <p>Orders</p>

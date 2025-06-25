@@ -1,19 +1,21 @@
-import React from 'react';
-import { getTotalCartAmount, removeFromCart, selectCartItems } from '../../store/cartSlic/foodListSlice';
-import { selectFoodList } from '../../store/cartSlic/foodListSlice';
-import { useDispatch, useSelector } from 'react-redux';
+import React, { useContext } from 'react';
+import { StoreContext } from '../../context/StoreContext';
 import { Link } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom'
+
 
 const Cart = () => {
-  const dispatch = useDispatch();
-  const cartItems = useSelector(selectCartItems);
-  const foodList = useSelector(selectFoodList);
-  const totalAmount = useSelector(getTotalCartAmount);
-  const baseUrl = "http://localhost:4001"
+  const {
+    cartItems,
+    food_list,
+    removeCart,
+    getTotalCartAmount,
+    baseURL
+  } = useContext(StoreContext);
+  const navigate = useNavigate()
 
-  console.log(totalAmount)
-  console.log('Food List:', foodList);
-  console.log('Cart Items:', cartItems);
+
+  const totalAmount = getTotalCartAmount();
 
   return (
     <div className="mt-32 px-4 lg:px-16">
@@ -27,30 +29,26 @@ const Cart = () => {
       </div>
 
       <div className="mt-6 space-y-6">
-        {foodList.map((item) => {
-          if (cartItems[item._id] > 0) {
+        {food_list.map((item) => {
+          const quantity = cartItems[item._id];
+          if (quantity > 0) {
             return (
               <div
                 key={item._id}
                 className="grid grid-cols-6 text-center text-gray-700 text-base md:text-lg items-center border-b pb-4"
               >
                 <img
-                  src={baseUrl + "/images/" + item.image}
+                  src={`${baseURL}/images/${item.image}`}
                   alt={item.name}
                   className="mx-auto w-20 h-20 object-cover rounded-lg"
                 />
-
                 <p className="mt-2 font-medium">{item.name}</p>
-
                 <p className="mt-2">${item.price}</p>
-
-                <p className="mt-2">{cartItems[item._id]}</p>
-
-                <p className="mt-2">${item.price * cartItems[item._id]}</p>
-
+                <p className="mt-2">{quantity}</p>
+                <p className="mt-2">${(item.price * quantity).toFixed(2)}</p>
                 <button
                   className="mt-2 text-[#137548] hover:text-[#79b89a] font-bold"
-                  onClick={() => dispatch(removeFromCart({ itemId: item._id }))}
+                  onClick={() => removeCart(item._id)}
                 >
                   Remove
                 </button>
@@ -61,14 +59,13 @@ const Cart = () => {
         })}
       </div>
 
-
       <div className="flex flex-col md:flex-row mt-32 justify-between gap-6">
         <div className="p-4 bg-gray-50 rounded-md shadow-md flex-1">
           <h1 className="text-[#137548] font-bold text-xl">Cart Totals</h1>
           <div className="mt-4">
             <div className="flex justify-between py-2">
               <p className="text-gray-700">Subtotal</p>
-              <p className="text-gray-700 font-medium">${totalAmount}</p>
+              <p className="text-gray-700 font-medium">${totalAmount.toFixed(2)}</p>
             </div>
             <hr />
             <div className="flex justify-between py-2">
@@ -78,14 +75,16 @@ const Cart = () => {
             <hr />
             <div className="flex justify-between py-2 font-bold">
               <p className="text-gray-700">Total</p>
-              <p className="text-gray-700">${totalAmount + 2}</p>
+              <p className="text-gray-700">${(totalAmount + 2).toFixed(2)}</p>
             </div>
           </div>
-          <Link to="/order">
-            <button className="w-full bg-[#137548] mt-4 text-white py-3 rounded-md hover:bg-[#79b89a]">
+          {/* <Link to="/order"> */}
+            <button className="w-full bg-[#137548] mt-4 text-white py-3 rounded-md hover:bg-[#79b89a]"
+            onClick={() => navigate('/order')}
+            >
               CHECKOUT TO PROCEED
             </button>
-          </Link>
+          {/* </Link> */}
         </div>
 
         <div className="p-4 bg-gray-50 rounded-md shadow-md flex-1">
@@ -102,7 +101,6 @@ const Cart = () => {
           </div>
         </div>
       </div>
-
     </div>
   );
 };

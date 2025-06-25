@@ -32,7 +32,7 @@ const foodListSlice = createSlice({
     reducers: {
         addToCart: (state, action) => {
             const { itemId } = action.payload;
-            
+
             // Update local state (cartItems)
             if (!state.cartItems[itemId]) {
                 state.cartItems[itemId] = 1;

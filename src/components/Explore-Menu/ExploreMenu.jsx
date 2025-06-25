@@ -7,7 +7,7 @@ const ExploreMenu = ({ category, setCategory }) => {
             <h1 className="text-4xl text-center font-bold text-[#137548]">
                 Explore Our Menu
             </h1>
-            <p cl
+            <p
             className="mt-4 text-center text-lg text-gray-700">
                 Choose the diverse food items you want to taste.
             </p>
