@@ -4,20 +4,23 @@ import { toast } from 'react-toastify';
 
 const ListItems = () => {
   const [list, setList] = useState([]);
-  const url = "http://localhost:4001";
+  const url =
+  process.env.NODE_ENV === "development"
+    ? "http://localhost:4001"
+    : "https://khadai-com-admin.onrender.com"; // ✅ Fix this
 
-  const fetchMenuList = async () => {
-    try {
-      const response = await axios.get("/api/food/list");
-      if (response.data.success) {
-        setList(response.data.data);
-      } else {
-        toast.error("Something went wrong!!");
-      }
-    } catch (error) {
-      toast.error("Failed to fetch data!");
+const fetchMenuList = async () => {
+  try {
+    const response = await axios.get(`${url}/api/food/list`); // ✅ Use full URL
+    if (response.data.success) {
+      setList(response.data.data);
+    } else {
+      toast.error("Something went wrong!!");
     }
-  };
+  } catch (error) {
+    toast.error("Failed to fetch data!");
+  }
+};
 
   const removeFood = async (foodId) => {
     console.log(foodId)
