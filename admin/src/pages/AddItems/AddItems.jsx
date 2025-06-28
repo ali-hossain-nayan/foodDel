@@ -8,6 +8,10 @@ const AddItems = () => {
   // const url = "http://localhost:4001"
 
   const [image, setImage] = useState(false);
+  const API_BASE =
+    process.env.NODE_ENV === 'development'
+      ? 'http://localhost:4001'
+      : 'https://khadai-com-admin.onrender.com';
   const [data, setData] = useState({
     name: "",
     description: "",
@@ -35,22 +39,26 @@ const AddItems = () => {
     formData.append("category", data.category)
     formData.append("image", image)
 
-    const callAPI = await axios.post(`/api/food/add`, formData);
+    try {
+      const response = await axios.post(`${API_BASE}/api/food/add`, formData);
 
-    if (callAPI.data.success) {
-      setData({
-        name: "",
-        description: "",
-        price: "",
-        category: "Salad"
-      })
-      setImage(false);
-      toast.success(callAPI.data.message);
-    } else {
-      toast.error(callAPI.data.message);
+      if (response.data.success) {
+        setData({
+          name: '',
+          description: '',
+          price: '',
+          category: 'Salad',
+        });
+        setImage(false);
+        toast.success(response.data.message);
+      } else {
+        toast.error(response.data.message);
+      }
+    } catch (error) {
+      console.error('Error adding food:', error);
+      toast.error('Failed to add food item!');
     }
-
-  }
+  };
 
   return (
     <div className="px-4 md:ml-12">
