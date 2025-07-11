@@ -9,6 +9,7 @@ import { Route, Routes } from 'react-router-dom'
 import Footer from './components/Footer/Footer'
 import { useState } from 'react'
 import Login from './components/Login/Login'
+import { Toaster } from 'react-hot-toast'
 
 function App() {
 
@@ -26,6 +27,15 @@ function App() {
           <Route path='/verify' element={<Verify />} />
           <Route path='/myorders' element={<MyOrders />} />
         </Routes>
+        <Toaster
+        position="top-right"
+        toastOptions={{
+          duration: 3000,
+          style: {
+            fontSize: "14px",
+          },
+        }}
+      />
       </div>
       <Footer />
     </>

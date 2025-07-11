@@ -1,7 +1,9 @@
-import React, { useContext, useEffect, useState } from 'react';
+import  { useContext, useEffect, useState } from 'react';
 import { StoreContext } from '../../context/StoreContext';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
+import toast from 'react-hot-toast'; // 
+
 
 const PlaceOrder = () => {
   const { getTotalCartAmount, token, food_list, cartItems, baseURL } = useContext(StoreContext);
@@ -24,36 +26,41 @@ const PlaceOrder = () => {
     setData((prevData) => ({ ...prevData, [name]: value }));
   };
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
+ const handleSubmit = async (e) => {
+  e.preventDefault();
 
-    let orderItems = food_list.reduce((acc, item) => {
-      if (cartItems[item._id] > 0) {
-        acc.push({ ...item, quantity: cartItems[item._id] });
-      }
-      return acc;
-    }, []);
-
-    let orderData = {
-      address: data,
-      items: orderItems,
-      amount: getTotalCartAmount() + 2
-    };
-
-    const callAPI = await axios.post(baseURL + '/api/order/place', orderData, { headers: { token } });
-
-    if (callAPI.data.success) {
-      window.location.replace(callAPI.data.session_url);
-    } else {
-      alert('Something went wrong!!');
+  let orderItems = food_list.reduce((acc, item) => {
+    if (cartItems[item._id] > 0) {
+      acc.push({ ...item, quantity: cartItems[item._id] });
     }
+    return acc;
+  }, []);
+
+  let orderData = {
+    address: data,
+    items: orderItems,
+    amount: getTotalCartAmount() + 2
   };
 
-  useEffect(() => {
-    if (!token || getTotalCartAmount() === 0) {
-      navigate('/cart');
+  try {
+    const callAPI = await axios.post(baseURL + '/api/order/place', orderData, {
+      headers: { token },
+    });
+
+    if (callAPI.data.success) {
+      toast.success("Redirecting to payment...");
+      setTimeout(() => {
+        window.location.replace(callAPI.data.session_url);
+      }, 1000); // Small delay so the toast appears
+    } else {
+      toast.error('Something went wrong!');
     }
-  }, [token]);
+  } catch (error) {
+    toast.error('Failed to place order');
+    console.error(error);
+  }
+};
+
 
   const deliveryFee = getTotalCartAmount() === 0 ? 0 : 2;
   const total = getTotalCartAmount() + deliveryFee;
