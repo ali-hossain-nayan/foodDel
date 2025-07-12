@@ -40,10 +40,14 @@ const Login = ({ setShowLogin }) => {
     };
 
     return (
-        <div className="fixed justify-center items-center inset-0 z-10 bg-black bg-opacity-60 grid">
-            <form onSubmit={handleSubmit} className="w-[min(23vw,330px)] text-gray-500 bg-white flex flex-col gap-6 p-6 rounded-lg animate-fadeIn">
+        <div className="fixed inset-0 z-10 bg-black bg-opacity-60 flex justify-center items-center p-4">
+            <form
+                onSubmit={handleSubmit}
+                className="w-full max-w-sm sm:max-w-md mx-auto text-gray-500 bg-white flex flex-col gap-6 p-6 sm:p-8 rounded-lg animate-fadeIn"
+            >
+
                 <div className="flex justify-between items-center text-black">
-                    <h2 className="font-bold">{curState}</h2>
+                    <h2 className="font-bold text-lg sm:text-xl">{curState}</h2>
                     <img
                         className="w-4 cursor-pointer"
                         onClick={() => setShowLogin(false)}

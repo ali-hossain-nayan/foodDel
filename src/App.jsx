@@ -10,6 +10,7 @@ import Footer from './components/Footer/Footer'
 import { useState } from 'react'
 import Login from './components/Login/Login'
 import { Toaster } from 'react-hot-toast'
+import FoodDetail from './pages/FoodDetail/FoodDetail'
 
 function App() {
 
@@ -26,6 +27,7 @@ function App() {
           <Route path='/order' element={<PlaceOrder />} />
           <Route path='/verify' element={<Verify />} />
           <Route path='/myorders' element={<MyOrders />} />
+           <Route path='/food/:id' element={<FoodDetail />} />
         </Routes>
         <Toaster
         position="top-right"

@@ -58,9 +58,11 @@ import add_icon_white from './add_icon_white.png'
 import play_store from './play_store.png'
 import app_store from './app_store.png'
 import heroImg from "./hero.jpg"
+import orderPic from './orderPage.jpg'
 
 export const assets = {
     heroImg,
+    orderPic,
     cross_icon,
     rating_starts,
     facebook_icon,
