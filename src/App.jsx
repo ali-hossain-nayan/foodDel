@@ -27,17 +27,17 @@ function App() {
           <Route path='/order' element={<PlaceOrder />} />
           <Route path='/verify' element={<Verify />} />
           <Route path='/myorders' element={<MyOrders />} />
-           <Route path='/food/:id' element={<FoodDetail />} />
+          <Route path='/food/:id' element={<FoodDetail />} />
         </Routes>
         <Toaster
-        position="top-right"
-        toastOptions={{
-          duration: 3000,
-          style: {
-            fontSize: "14px",
-          },
-        }}
-      />
+          position="top-right"
+          toastOptions={{
+            duration: 3000,
+            style: {
+              fontSize: "14px",
+            },
+          }}
+        />
       </div>
       <Footer />
     </>
