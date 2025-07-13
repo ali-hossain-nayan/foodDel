@@ -5,10 +5,10 @@ import { assets } from '../../assets/assets';
 
 const Orders = () => {
   // ✅ Automatically use correct base URL depending on environment
-  const API_BASE =
-    process.env.NODE_ENV === 'development'
-      ? 'http://localhost:4001'
-      : 'https://khadai-com-admin.onrender.com';
+  const API_BASE = "https://khaidai-com-backend.onrender.com";
+    // process.env.NODE_ENV === 'development'
+    //   ? 'http://localhost:4001'
+    //   : 'https://khadai-com-admin.onrender.com';
 
   const [orders, setOrders] = useState([]);
 

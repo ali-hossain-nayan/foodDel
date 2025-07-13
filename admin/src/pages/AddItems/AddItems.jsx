@@ -8,10 +8,10 @@ const AddItems = () => {
   // const url = "http://localhost:4001"
 
   const [image, setImage] = useState(false);
-  const API_BASE =
-    process.env.NODE_ENV === 'development'
-      ? 'http://localhost:4001'
-      : 'https://khadai-com-admin.onrender.com';
+  const API_BASE = "https://khaidai-com-backend.onrender.com";
+    // process.env.NODE_ENV === 'development'
+    //   ? 'http://localhost:4001'
+    //   : 'https://khadai-com-admin.onrender.com';
   const [data, setData] = useState({
     name: "",
     description: "",

@@ -4,10 +4,10 @@ import { toast } from 'react-toastify';
 
 const ListItems = () => {
   const [list, setList] = useState([]);
-  const url =
-  process.env.NODE_ENV === "development"
-    ? "http://localhost:4001"
-    : "https://khadai-com-admin.onrender.com"; // ✅ Fix this
+  const url = "https://khaidai-com-backend.onrender.com";
+  // process.env.NODE_ENV === "development"
+  //   ? "http://localhost:4001"
+  //   : "https://khadai-com-admin.onrender.com"; // ✅ Fix this
 
 const fetchMenuList = async () => {
   try {
